@@ -137,9 +137,12 @@ export const RideCard: React.FC<RideCardProps> = ({ ride, compact = false }) => 
               >
                   Request
               </button>
-              <button className="bg-primary-500 text-white p-2 rounded-full hover:bg-primary-600 transition-colors">
+              <a 
+                href={`tel:${ride.driver.phone || '+8801727828730'}`}
+                className="bg-primary-500 text-white p-2 rounded-full hover:bg-primary-600 transition-colors flex items-center justify-center"
+              >
                   <Phone size={16} fill="currentColor" />
-              </button>
+              </a>
           </div>
         </div>
 

@@ -118,7 +118,9 @@ export const PostRide: React.FC = () => {
       availableSeats: seats,
       totalSeats: 4, // assuming standard car
       duration: '45 mins', // calculated
-      selectedDays: selectedDays // Save selected days
+      selectedDays: selectedDays, // Save selected days
+      // Ensure we keep existing passengers if editing, or start empty for new ride
+      passengers: location.state?.ride?.passengers || []
     };
 
     if (location.state?.ride) {

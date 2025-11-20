@@ -44,6 +44,9 @@ export const Profile: React.FC = () => {
           </div>
           <h2 className="text-2xl font-bold text-white mb-1">{CURRENT_USER.name}</h2>
           <p className="text-slate-400 text-sm">user.alvee@gmail.com</p>
+          <a href="tel:+8801727828730" className="text-primary-400 text-sm font-semibold mt-1 hover:text-primary-300 transition-colors flex items-center gap-1">
+            +8801727828730
+          </a>
           
           <div className="flex gap-6 mt-6 w-full max-w-xs justify-center">
               <div className="text-center">

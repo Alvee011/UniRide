@@ -1,7 +1,7 @@
 
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { Ride, RideRequest, Vehicle } from '../types';
-import { MOCK_RIDES, MY_VEHICLES } from '../constants';
+import { MOCK_RIDES, MY_VEHICLES, MOCK_REQUESTS } from '../constants';
 
 interface AppContextType {
   rides: Ride[];
@@ -43,9 +43,9 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   const [requests, setRequests] = useState<RideRequest[]>(() => {
     try {
       const saved = localStorage.getItem('requests');
-      return saved ? JSON.parse(saved) : [];
+      return saved ? JSON.parse(saved) : MOCK_REQUESTS;
     } catch (e) {
-      return [];
+      return MOCK_REQUESTS;
     }
   });
 
@@ -66,7 +66,8 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
 
   // Actions
   const addRide = (ride: Ride) => {
-    setRides(prev => [...prev, ride]);
+    // Prepend the new ride so it appears first in the list
+    setRides(prev => [ride, ...prev]);
   };
 
   const updateRide = (updatedRide: Ride) => {
@@ -90,9 +91,33 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   };
 
   const handleRequestAction = (id: string, action: 'accepted' | 'rejected') => {
+    // Update the request status
     setRequests(prev => prev.map(req => 
       req.id === id ? { ...req, status: action } : req
     ));
+
+    // If accepted, we need to add the passenger to the ride and update seats
+    if (action === 'accepted') {
+        const request = requests.find(r => r.id === id);
+        if (request) {
+            setRides(prevRides => prevRides.map(ride => {
+                if (ride.id === request.rideId) {
+                    const currentPassengers = ride.passengers || [];
+                    // Check if passenger already exists to avoid duplicates
+                    if (currentPassengers.some(p => p.name === request.passenger.name)) {
+                        return ride;
+                    }
+                    
+                    return {
+                        ...ride,
+                        availableSeats: Math.max(0, ride.availableSeats - 1),
+                        passengers: [...currentPassengers, request.passenger]
+                    };
+                }
+                return ride;
+            }));
+        }
+    }
   };
 
   return (

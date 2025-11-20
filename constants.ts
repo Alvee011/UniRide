@@ -1,11 +1,12 @@
 
-import { Ride, User, LocationSuggestion, Vehicle } from './types';
+import { Ride, User, LocationSuggestion, Vehicle, RideRequest } from './types';
 
 export const CURRENT_USER: User = {
     id: 'u1',
     name: 'Faruque Azam Alvee',
     avatar: 'https://picsum.photos/seed/alvee/200',
-    rating: 4.9
+    rating: 4.9,
+    phone: '+8801727828730'
 };
 
 export const MY_VEHICLES: Vehicle[] = [
@@ -34,7 +35,8 @@ export const MOCK_RIDES: Ride[] = [
             id: 'd1',
             name: 'Alvee Faruque',
             avatar: 'https://picsum.photos/seed/alvee/200',
-            rating: 4.9
+            rating: 4.9,
+            phone: '+8801727828730'
         },
         car: {
             model: 'Toyota Axio',
@@ -64,7 +66,8 @@ export const MOCK_RIDES: Ride[] = [
             id: 'd2',
             name: 'Wasi',
             avatar: 'https://picsum.photos/seed/wasi/200',
-            rating: 4.7
+            rating: 4.7,
+            phone: '+8801711223344'
         },
         car: {
             model: 'Toyota Allion',
@@ -88,7 +91,8 @@ export const MOCK_RIDES: Ride[] = [
             id: 'd3',
             name: 'Rubi',
             avatar: 'https://picsum.photos/seed/rubi/200',
-            rating: 5.0
+            rating: 5.0,
+            phone: '+8801998877665'
         },
         car: {
             model: 'Toyota Premio',
@@ -105,6 +109,21 @@ export const MOCK_RIDES: Ride[] = [
         duration: '35 mins',
         selectedDays: ['Sat', 'Fri'],
         passengers: []
+    }
+];
+
+export const MOCK_REQUESTS: RideRequest[] = [
+    {
+        id: 'req_default_1',
+        rideId: 'r1',
+        passenger: {
+            name: 'Anirodho Roy',
+            avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=150&h=150'
+        },
+        pickupLocation: 'Banasree G block',
+        dropoffLocation: 'GP house',
+        requestedDates: ['Tomorrow'],
+        status: 'pending'
     }
 ];
 

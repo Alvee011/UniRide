@@ -4,6 +4,7 @@ export interface User {
     name: string;
     avatar: string;
     rating: number;
+    phone?: string;
 }
 
 export interface CarDetails {
