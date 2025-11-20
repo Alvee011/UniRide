@@ -1,49 +1,72 @@
 
-import React, { createContext, useContext, useState } from 'react';
-import { Ride, Vehicle, RideRequest } from '../types';
+import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { Ride, RideRequest, Vehicle } from '../types';
 import { MOCK_RIDES, MY_VEHICLES } from '../constants';
 
 interface AppContextType {
   rides: Ride[];
   vehicles: Vehicle[];
   requests: RideRequest[];
+  isModalOpen: boolean;
+  setModalOpen: (open: boolean) => void;
   addRide: (ride: Ride) => void;
   updateRide: (ride: Ride) => void;
   deleteRide: (id: string) => void;
   addVehicle: (vehicle: Vehicle) => void;
   deleteVehicle: (id: string) => void;
-  sendRequest: (request: RideRequest) => void;
-  handleRequestAction: (id: string, status: 'accepted' | 'rejected') => void;
-  isModalOpen: boolean;
-  setModalOpen: (isOpen: boolean) => void;
+  sendRequest: (req: RideRequest) => void;
+  handleRequestAction: (id: string, action: 'accepted' | 'rejected') => void;
 }
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
 
-export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  // Initialize with Mock Data so the app isn't empty
-  const [rides, setRides] = useState<Ride[]>(MOCK_RIDES);
-  const [vehicles, setVehicles] = useState<Vehicle[]>(MY_VEHICLES);
-  const [isModalOpen, setModalOpen] = useState(false);
-  
-  // Mock initial request for demo purposes
-  const [requests, setRequests] = useState<RideRequest[]>([
-    {
-        id: 'req_1',
-        rideId: 'r1',
-        passenger: {
-            name: 'Tanvir Hassan',
-            avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=100&h=100'
-        },
-        pickupLocation: 'Jamuna Future Park, Gate 1',
-        dropoffLocation: 'IUB Main Gate',
-        requestedDates: ['Oct 24', 'Oct 26'], // Example dates
-        status: 'pending'
+export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+  // Initialize state from localStorage or fall back to constants
+  const [rides, setRides] = useState<Ride[]>(() => {
+    try {
+      const saved = localStorage.getItem('rides');
+      return saved ? JSON.parse(saved) : MOCK_RIDES;
+    } catch (e) {
+      return MOCK_RIDES;
     }
-  ]);
+  });
 
+  const [vehicles, setVehicles] = useState<Vehicle[]>(() => {
+    try {
+      const saved = localStorage.getItem('vehicles');
+      return saved ? JSON.parse(saved) : MY_VEHICLES;
+    } catch (e) {
+      return MY_VEHICLES;
+    }
+  });
+
+  const [requests, setRequests] = useState<RideRequest[]>(() => {
+    try {
+      const saved = localStorage.getItem('requests');
+      return saved ? JSON.parse(saved) : [];
+    } catch (e) {
+      return [];
+    }
+  });
+
+  const [isModalOpen, setModalOpen] = useState(false);
+
+  // Persist to localStorage whenever state changes
+  useEffect(() => {
+    localStorage.setItem('rides', JSON.stringify(rides));
+  }, [rides]);
+
+  useEffect(() => {
+    localStorage.setItem('vehicles', JSON.stringify(vehicles));
+  }, [vehicles]);
+
+  useEffect(() => {
+    localStorage.setItem('requests', JSON.stringify(requests));
+  }, [requests]);
+
+  // Actions
   const addRide = (ride: Ride) => {
-    setRides(prev => [ride, ...prev]);
+    setRides(prev => [...prev, ride]);
   };
 
   const updateRide = (updatedRide: Ride) => {
@@ -62,51 +85,30 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     setVehicles(prev => prev.filter(v => v.id !== id));
   };
 
-  const sendRequest = (request: RideRequest) => {
-    setRequests(prev => [request, ...prev]);
+  const sendRequest = (req: RideRequest) => {
+    setRequests(prev => [...prev, req]);
   };
 
-  const handleRequestAction = (id: string, status: 'accepted' | 'rejected') => {
-    // First update the request status
-    setRequests(prev => prev.map(req => req.id === id ? { ...req, status } : req));
-
-    // If accepted, add passenger to ride
-    if (status === 'accepted') {
-        const request = requests.find(r => r.id === id);
-        if (request) {
-             setRides(prevRides => prevRides.map(ride => {
-                 if (ride.id === request.rideId) {
-                     const newPassenger = request.passenger;
-                     const currentPassengers = ride.passengers || [];
-                     // Avoid duplicates
-                     if (!currentPassengers.some(p => p.name === newPassenger.name)) {
-                         return {
-                             ...ride,
-                             passengers: [...currentPassengers, newPassenger],
-                             availableSeats: Math.max(0, ride.availableSeats - 1)
-                         };
-                     }
-                 }
-                 return ride;
-             }));
-        }
-    }
+  const handleRequestAction = (id: string, action: 'accepted' | 'rejected') => {
+    setRequests(prev => prev.map(req => 
+      req.id === id ? { ...req, status: action } : req
+    ));
   };
 
   return (
-    <AppContext.Provider value={{ 
-      rides, 
-      vehicles, 
+    <AppContext.Provider value={{
+      rides,
+      vehicles,
       requests,
-      addRide, 
-      updateRide, 
-      deleteRide, 
-      addVehicle, 
+      isModalOpen,
+      setModalOpen,
+      addRide,
+      updateRide,
+      deleteRide,
+      addVehicle,
       deleteVehicle,
       sendRequest,
-      handleRequestAction,
-      isModalOpen,
-      setModalOpen
+      handleRequestAction
     }}>
       {children}
     </AppContext.Provider>
@@ -115,7 +117,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
 export const useApp = () => {
   const context = useContext(AppContext);
-  if (!context) {
+  if (context === undefined) {
     throw new Error('useApp must be used within an AppProvider');
   }
   return context;

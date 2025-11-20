@@ -15,7 +15,7 @@ export const MY_VEHICLES: Vehicle[] = [
         model: 'Toyota Axio',
         plate: 'DHK 32-6884',
         color: 'White',
-        image: 'https://purepng.com/public/uploads/large/purepng.com-honda-city-white-carcarhondahonda-city-white-car-1701527484578r485m.png'
+        image: '/Images/Axio.jpg'
     },
     {
         id: 'v2',
@@ -23,7 +23,7 @@ export const MY_VEHICLES: Vehicle[] = [
         model: 'Yamaha R15',
         plate: 'DHK 11-2233',
         color: 'Blue',
-        image: 'https://bd.gaadicdn.com/processedimages/yamaha/r15-v4/source/r15-v46613f8d6dc622.jpg'
+        image: '/Images/r15.webp'
     }
 ];
 
