@@ -156,7 +156,7 @@ export const RideCard: React.FC<RideCardProps> = ({ ride, compact = false }) => 
               <div className="mt-1 w-2.5 h-2.5 rounded-full bg-dark-900 shrink-0"></div>
               <div className="flex-1 flex justify-between">
                   <span className="text-sm font-medium text-slate-800">{ride.from}</span>
-                  {!compact && <span className="text-xs text-gray-500">{ride.departureTime}</span>}
+                  <span className="text-xs text-gray-500">{ride.departureTime}</span>
               </div>
           </div>
 
@@ -165,7 +165,7 @@ export const RideCard: React.FC<RideCardProps> = ({ ride, compact = false }) => 
               <div className="mt-1 w-2.5 h-2.5 rounded-full border-2 border-primary-500 bg-white shrink-0"></div>
               <div className="flex-1 flex justify-between">
                   <span className="text-sm font-medium text-slate-800">{ride.to}</span>
-                  {!compact && <span className="text-xs text-gray-500">{/* Arrival Time Calc */} {parseInt(ride.departureTime) + 1}:00 {ride.departureTime.slice(-2)}</span>}
+                  <span className="text-xs text-gray-500">{parseInt(ride.departureTime) + 1}:00 {ride.departureTime.slice(-2)}</span>
               </div>
           </div>
         </div>
