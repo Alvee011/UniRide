@@ -13,6 +13,7 @@ import { MyRides } from './pages/MyRides';
 import { VehicleDetails } from './pages/VehicleDetails';
 import { Trips } from './pages/Trips';
 import { RideRequests } from './pages/RideRequests';
+import { Settings } from './pages/Settings';
 import { AppProvider } from './context/AppContext';
 
 const App: React.FC = () => {
@@ -32,6 +33,7 @@ const App: React.FC = () => {
             <Route path="/ride-requests" element={<RideRequests />} />
             <Route path="/vehicles" element={<VehicleDetails />} />
             <Route path="/trips" element={<Trips />} />
+            <Route path="/settings" element={<Settings />} />
             <Route path="*" element={<Navigate to="/" />} />
           </Routes>
           <Navigation />

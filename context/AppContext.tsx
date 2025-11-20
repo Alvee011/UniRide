@@ -16,6 +16,7 @@ interface AppContextType {
   deleteVehicle: (id: string) => void;
   sendRequest: (req: RideRequest) => void;
   handleRequestAction: (id: string, action: 'accepted' | 'rejected') => void;
+  resetApp: () => void;
 }
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
@@ -120,6 +121,12 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     }
   };
 
+  const resetApp = () => {
+    setRides(MOCK_RIDES);
+    setVehicles(MY_VEHICLES);
+    setRequests(MOCK_REQUESTS);
+  };
+
   return (
     <AppContext.Provider value={{
       rides,
@@ -133,7 +140,8 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       addVehicle,
       deleteVehicle,
       sendRequest,
-      handleRequestAction
+      handleRequestAction,
+      resetApp
     }}>
       {children}
     </AppContext.Provider>
