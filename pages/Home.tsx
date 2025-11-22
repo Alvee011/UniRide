@@ -1,105 +1,259 @@
 
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Bell, Grip, Navigation as NavIcon, Search as SearchIcon } from 'lucide-react';
-import { RideCard } from '../components/RideCard';
+import { Bell, Search, MapPin, Clock, ArrowRight, Car, PlusCircle, Bike, Star } from 'lucide-react';
 import { useApp } from '../context/AppContext';
+import { CURRENT_USER } from '../constants';
 
 export const Home: React.FC = () => {
   const navigate = useNavigate();
-  const { rides } = useApp();
+  
+  // Sheet state: percentage of screen height
+  // Default to 90% as requested (Top 10% Map)
+  const [sheetHeight, setSheetHeight] = useState(88); 
+  const [isDragging, setIsDragging] = useState(false);
+  const sheetRef = useRef<HTMLDivElement>(null);
+  
+  // Drag tracking refs
+  const dragStartY = useRef(0);
+  const startHeight = useRef(0);
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    setIsDragging(true);
+    dragStartY.current = e.touches[0].clientY;
+    startHeight.current = sheetHeight;
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    if (!isDragging) return;
+    
+    const currentY = e.touches[0].clientY;
+    const deltaY = currentY - dragStartY.current; // Positive = moving down
+    const windowHeight = window.innerHeight;
+    
+    // Convert delta pixel to percentage
+    // Moving down (positive delta) decreases height
+    const deltaPercentage = (deltaY / windowHeight) * 100;
+    
+    let newHeight = startHeight.current - deltaPercentage;
+    
+    // Constraints
+    if (newHeight > 92) newHeight = 92; // Max height (leave a sliver of map)
+    if (newHeight < 30) newHeight = 30; // Min height (collapsed view)
+    
+    setSheetHeight(newHeight);
+  };
+
+  const handleTouchEnd = () => {
+    setIsDragging(false);
+    // Snap logic
+    if (sheetHeight > 60) {
+        setSheetHeight(88); // Snap to expanded
+    } else {
+        setSheetHeight(40); // Snap to collapsed
+    }
+  };
+
+  // Dynamic style for the sheet
+  const sheetStyle = {
+    height: `${sheetHeight}%`,
+    transition: isDragging ? 'none' : 'height 0.3s cubic-bezier(0.2, 0.8, 0.2, 1)'
+  };
 
   return (
-    <div className="h-screen flex flex-col bg-gray-100 relative overflow-hidden">
+    <div className="h-screen w-full bg-white relative overflow-hidden">
       
-      {/* Header Overlay */}
-      <div className="absolute top-0 left-0 right-0 z-30 pt-12 px-6 pb-4 bg-gradient-to-b from-white/90 to-transparent pointer-events-none">
-         <div className="flex justify-between items-center pointer-events-auto">
-            <button className="p-2 bg-white rounded-xl shadow-sm text-slate-700">
-                <Grip size={20} />
-            </button>
-            <div className="flex gap-2">
-                <button className="p-2 bg-white rounded-xl shadow-sm text-slate-700 relative">
-                    <Bell size={20} />
-                    <span className="absolute top-2 right-2.5 w-2 h-2 bg-red-500 rounded-full border border-white"></span>
-                </button>
-            </div>
-         </div>
+      {/* 1. Full Screen Map Background */}
+      {/* It stays fixed at the back. When sheet moves down, more map is revealed. */}
+      <div className="absolute inset-0 z-0 bg-slate-100">
+        <div className="w-full h-full relative opacity-90">
+            <img 
+                src="https://static-maps.yandex.ru/1.x/?lang=en-US&ll=90.4125,23.8103&z=14&l=map&size=600,800"
+                alt="Map Background" 
+                className="w-full h-full object-cover"
+                onError={(e) => {
+                    e.currentTarget.src = "https://upload.wikimedia.org/wikipedia/commons/thumb/7/74/Dhaka_City_Map.jpg/600px-Dhaka_City_Map.jpg"; 
+                }}
+            />
+            {/* Gradient overlay for text readability at top */}
+            <div className="absolute top-0 left-0 right-0 h-32 bg-gradient-to-b from-white/80 to-transparent pointer-events-none"></div>
+        </div>
       </div>
 
-      {/* Map Background (Dhaka) */}
-      <div className="absolute inset-0 z-0 bg-slate-200">
-        <img 
-            src="https://static-maps.yandex.ru/1.x/?lang=en-US&ll=90.4125,23.8103&z=12&l=map&size=600,900"
-            alt="Dhaka Map Background" 
-            className="w-full h-full object-cover opacity-60 grayscale"
-            onError={(e) => {
-                // Fallback to generic map if static map fails
-                e.currentTarget.src = "https://upload.wikimedia.org/wikipedia/commons/thumb/7/74/Dhaka_City_Map.jpg/600px-Dhaka_City_Map.jpg"; 
-                e.currentTarget.style.opacity = "0.3";
+      {/* 2. Floating Header (Always visible on top of map) */}
+      <div className="absolute top-0 left-0 right-0 pt-12 px-6 flex justify-between items-start z-10 pointer-events-none">
+        <div className="flex items-center gap-3 pointer-events-auto">
+            <div className="bg-white p-0.5 rounded-full shadow-md active:scale-95 transition-transform cursor-pointer" onClick={() => navigate('/profile')}>
+                <img 
+                    src={CURRENT_USER.avatar} 
+                    alt="User" 
+                    className="w-10 h-10 rounded-full object-cover border-2 border-white" 
+                />
+            </div>
+            <div className="bg-white/80 backdrop-blur-md py-1.5 px-4 rounded-full shadow-sm">
+                <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Good Morning</p>
+                <h1 className="text-sm font-bold text-slate-800">{CURRENT_USER.name.split(' ')[0]}</h1>
+            </div>
+        </div>
+        
+        <button 
+            onClick={() => navigate('/notifications')}
+            className="w-10 h-10 bg-white rounded-full shadow-md flex items-center justify-center text-slate-700 relative active:scale-95 transition-transform pointer-events-auto"
+        >
+            <Bell size={20} />
+            <span className="absolute top-2 right-2.5 w-2 h-2 bg-red-500 rounded-full border border-white"></span>
+        </button>
+      </div>
+
+      {/* 3. Draggable Bottom Sheet */}
+      <div 
+        ref={sheetRef}
+        style={sheetStyle}
+        className="absolute bottom-0 left-0 right-0 bg-white rounded-t-[2.5rem] shadow-[0_-10px_40px_-15px_rgba(0,0,0,0.15)] z-20 flex flex-col"
+      >
+        {/* Drag Handle Area */}
+        <div 
+            className="w-full flex items-center justify-center pt-4 pb-2 cursor-grab active:cursor-grabbing touch-none shrink-0"
+            onTouchStart={handleTouchStart}
+            onTouchMove={handleTouchMove}
+            onTouchEnd={handleTouchEnd}
+            onClick={() => {
+                // Tap toggle functionality
+                if (sheetHeight < 60) setSheetHeight(88);
             }}
-        />
-        
-        {/* Map Markers (Dynamic based on rides usually, but static for visual demo) */}
-        {rides.length > 0 && (
-            <div className="absolute top-1/3 left-1/3 transform -translate-x-1/2 -translate-y-1/2">
-                <div className="bg-slate-900 text-white p-1 rounded-full shadow-lg flex flex-col items-center">
-                    <img src={rides[0].driver.avatar} className="w-8 h-8 rounded-full border-2 border-white" alt="driver" />
-                    <div className="w-0 h-0 border-l-[6px] border-l-transparent border-r-[6px] border-r-transparent border-t-[8px] border-t-slate-900 mt-1"></div>
-                </div>
-            </div>
-        )}
-
-        {rides.length > 1 && (
-             <div className="absolute top-1/2 right-1/3 transform -translate-x-1/2 -translate-y-1/2">
-                <div className="bg-white text-slate-900 p-1 rounded-full shadow-lg border border-gray-200 flex flex-col items-center">
-                     <img src={rides[1].driver.avatar} className="w-8 h-8 rounded-full" alt="driver" />
-                     <div className="w-0 h-0 border-l-[6px] border-l-transparent border-r-[6px] border-r-transparent border-t-[8px] border-t-white mt-1"></div>
-                </div>
-            </div>
-        )}
-      </div>
-
-      {/* Main Content Container */}
-      <div className="relative z-20 flex flex-col h-full justify-end pb-24">
-        
-        {/* Search Bar */}
-        <div className="px-6 mb-4">
-            <div 
-                onClick={() => navigate('/search')}
-                className="bg-white rounded-2xl p-4 shadow-soft flex items-center gap-3 cursor-pointer hover:bg-gray-50 transition-colors"
-            >
-                <div className="text-slate-400">
-                    <SearchIcon size={20} />
-                </div>
-                <div className="flex-1">
-                    <h3 className="text-sm font-semibold text-slate-700">Where are you going?</h3>
-                </div>
-                <div className="bg-gray-100 p-2 rounded-full text-slate-400">
-                   <NavIcon size={16} />
-                </div>
-            </div>
+        >
+            {/* The Handle Indicator */}
+            <div className="w-14 h-1.5 bg-gray-200 rounded-full"></div>
         </div>
 
-        {/* Nearby Rides Sheet */}
-        <div className="bg-white rounded-t-3xl shadow-up p-6 pb-8 min-h-[40vh]">
-            <div className="w-12 h-1 bg-gray-200 rounded-full mx-auto mb-6"></div>
+        {/* Scrollable Content Area */}
+        <div className="flex-1 overflow-y-auto no-scrollbar px-6 pb-28 pt-2">
             
-            <div className="flex justify-between items-end mb-6">
-                <h2 className="text-lg font-bold text-slate-800">Nearby Rides</h2>
-                <button className="text-primary-500 text-sm font-semibold" onClick={() => navigate('/search')}>View All</button>
+            {/* Hero Search Trigger */}
+            <button 
+                onClick={() => navigate('/search')}
+                className="w-full bg-gray-50 hover:bg-gray-100 transition-colors rounded-3xl p-4 flex items-center gap-4 mb-8 group border border-gray-100 shadow-sm"
+            >
+                <div className="w-12 h-12 bg-slate-900 rounded-full flex items-center justify-center text-white shadow-lg group-hover:scale-110 transition-transform shrink-0">
+                    <Search size={24} strokeWidth={3} />
+                </div>
+                <div className="flex-1 text-left">
+                    <h2 className="text-xl font-bold text-slate-800">Where to?</h2>
+                    <p className="text-sm text-slate-500 font-medium">Find a ride nearby</p>
+                </div>
+                <div className="bg-white px-3 py-1.5 rounded-xl text-xs font-bold text-slate-600 shadow-sm border border-gray-100">
+                    Now
+                </div>
+            </button>
+
+            {/* Saved Places / Suggestions */}
+            <div className="mb-8">
+                <div className="flex gap-4 overflow-x-auto no-scrollbar pb-2 -mx-6 px-6">
+                    <button onClick={() => navigate('/search')} className="flex flex-col items-center gap-2 min-w-[4.5rem] group">
+                        <div className="w-16 h-16 bg-blue-50 rounded-3xl flex items-center justify-center text-blue-600 group-active:scale-95 transition-all border border-blue-100 shadow-sm">
+                            <MapPin size={28} />
+                        </div>
+                        <span className="text-xs font-bold text-slate-700">Home</span>
+                    </button>
+
+                    <button onClick={() => navigate('/search')} className="flex flex-col items-center gap-2 min-w-[4.5rem] group">
+                        <div className="w-16 h-16 bg-emerald-50 rounded-3xl flex items-center justify-center text-emerald-600 group-active:scale-95 transition-all border border-emerald-100 shadow-sm">
+                            <Star size={28} />
+                        </div>
+                        <span className="text-xs font-bold text-slate-700">Work</span>
+                    </button>
+
+                    <button onClick={() => navigate('/search')} className="flex flex-col items-center gap-2 min-w-[4.5rem] group">
+                        <div className="w-16 h-16 bg-gray-50 rounded-3xl flex items-center justify-center text-slate-600 group-active:scale-95 transition-all border border-gray-100 shadow-sm">
+                            <Clock size={28} />
+                        </div>
+                        <span className="text-xs font-bold text-slate-700">Recent</span>
+                    </button>
+                </div>
             </div>
 
-            <div className="flex flex-col gap-4">
-                {rides.slice(0, 2).map(ride => (
-                    <RideCard key={ride.id} ride={ride} compact />
-                ))}
-                {rides.length === 0 && (
-                    <p className="text-center text-gray-400 text-sm py-4">No rides available right now.</p>
-                )}
+            {/* Services Grid */}
+            <h3 className="text-lg font-bold text-slate-900 mb-4">Services</h3>
+            <div className="grid grid-cols-2 gap-3 mb-8">
+                {/* Find Ride */}
+                <div 
+                    onClick={() => navigate('/search')}
+                    className="bg-white border border-gray-100 p-5 rounded-3xl shadow-sm relative overflow-hidden group cursor-pointer min-h-[140px] flex flex-col justify-between"
+                >
+                    <div className="absolute right-[-20px] top-[-20px] w-24 h-24 bg-primary-50 rounded-full transition-transform group-hover:scale-150"></div>
+                    <div className="relative z-10">
+                         <div className="w-10 h-10 bg-primary-100 text-primary-600 rounded-xl flex items-center justify-center mb-3">
+                            <Car size={20} className="absolute" />
+                        </div>
+                    </div>
+                    <div className="relative z-10">
+                        <h4 className="font-bold text-slate-800 text-lg leading-tight">Get a<br/>Ride</h4>
+                    </div>
+                    <div className="absolute bottom-5 right-5 text-primary-500 opacity-0 group-hover:opacity-100 transition-opacity transform translate-x-2 group-hover:translate-x-0">
+                        <ArrowRight size={20} />
+                    </div>
+                </div>
+
+                {/* Offer Ride */}
+                <div 
+                    onClick={() => navigate('/post')}
+                    className="bg-slate-900 p-5 rounded-3xl shadow-lg shadow-slate-200 relative overflow-hidden group cursor-pointer min-h-[140px] flex flex-col justify-between"
+                >
+                    <div className="absolute right-[-20px] top-[-20px] w-24 h-24 bg-slate-800 rounded-full transition-transform group-hover:scale-150 opacity-50"></div>
+                    <div className="relative z-10">
+                        <div className="w-10 h-10 bg-slate-800 text-white rounded-xl flex items-center justify-center mb-3 border border-slate-700">
+                            <PlusCircle size={20} />
+                        </div>
+                    </div>
+                    <div className="relative z-10">
+                        <h4 className="font-bold text-white text-lg leading-tight">Offer<br/>Ride</h4>
+                    </div>
+                </div>
+
+                {/* My Trips */}
+                <div 
+                    onClick={() => navigate('/my-rides')}
+                    className="bg-white border border-gray-100 p-4 rounded-3xl shadow-sm flex items-center gap-4 cursor-pointer active:scale-95 transition-transform"
+                >
+                    <div className="w-10 h-10 bg-orange-50 text-orange-500 rounded-xl flex items-center justify-center shrink-0">
+                        <Bike size={20} />
+                    </div>
+                    <div>
+                        <h4 className="font-bold text-slate-800 text-sm">Rentals</h4>
+                    </div>
+                </div>
+
+                {/* Vehicles */}
+                <div 
+                    onClick={() => navigate('/vehicles')}
+                    className="bg-white border border-gray-100 p-4 rounded-3xl shadow-sm flex items-center gap-4 cursor-pointer active:scale-95 transition-transform"
+                >
+                    <div className="w-10 h-10 bg-purple-50 text-purple-500 rounded-xl flex items-center justify-center shrink-0">
+                        <Car size={20} />
+                    </div>
+                    <div>
+                        <h4 className="font-bold text-slate-800 text-sm">My Car</h4>
+                    </div>
+                </div>
             </div>
+
+            {/* Promo Banner */}
+            <div className="bg-gradient-to-r from-indigo-500 to-purple-600 rounded-3xl p-6 text-white shadow-lg shadow-indigo-200 relative overflow-hidden">
+                <div className="relative z-10 w-3/4">
+                    <h3 className="font-bold text-xl mb-2">Invite Friends</h3>
+                    <p className="text-sm text-indigo-100 mb-4 leading-relaxed">Get 50% off your next ride by inviting friends to UniRide.</p>
+                    <button className="bg-white text-indigo-600 text-xs font-bold px-4 py-2.5 rounded-xl shadow-md active:scale-95 transition-transform">
+                        Invite Now
+                    </button>
+                </div>
+                {/* Decor */}
+                <div className="absolute -right-10 -bottom-10 w-40 h-40 bg-white/10 rounded-full"></div>
+                <div className="absolute top-6 right-6 text-white/20 rotate-12">
+                    <Star size={64} fill="currentColor" />
+                </div>
+            </div>
+
         </div>
-
       </div>
     </div>
   );
