@@ -66,3 +66,12 @@ export interface LocationSuggestion {
     address: string;
     type: 'home' | 'work' | 'recent' | 'location';
 }
+
+export interface Notification {
+    id: string;
+    title: string;
+    message: string;
+    timestamp: string; // ISO string
+    type: 'system' | 'ride_update' | 'promo' | 'alert';
+    isRead: boolean;
+}

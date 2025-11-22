@@ -1,5 +1,5 @@
 
-import { Ride, User, LocationSuggestion, Vehicle, RideRequest } from './types';
+import { Ride, User, LocationSuggestion, Vehicle, RideRequest, Notification } from './types';
 
 export const CURRENT_USER: User = {
     id: 'u1',
@@ -132,4 +132,31 @@ export const MOCK_LOCATIONS: LocationSuggestion[] = [
     { id: 'l2', name: 'Bashundhara City', address: 'Panthapath, Dhaka', type: 'recent' },
     { id: 'l3', name: 'Banasree', address: 'Rampura, Dhaka', type: 'location' },
     { id: 'l4', name: 'Gulshan 2', address: 'Dhaka', type: 'location' },
+];
+
+export const MOCK_NOTIFICATIONS: Notification[] = [
+    {
+        id: 'n1',
+        title: 'Welcome to UniRide! 👋',
+        message: 'Thanks for joining our community. Complete your profile to get started and find your first ride.',
+        timestamp: new Date(Date.now() - 1000 * 60 * 60 * 24).toISOString(), // 1 day ago
+        type: 'system',
+        isRead: false
+    },
+    {
+        id: 'n2',
+        title: 'Traffic Alert 🚦',
+        message: 'Heavy traffic reported on Pragati Sarani. Plan your trip accordingly.',
+        timestamp: new Date(Date.now() - 1000 * 60 * 30).toISOString(), // 30 mins ago
+        type: 'alert',
+        isRead: false
+    },
+    {
+        id: 'n3',
+        title: 'Ride Completed',
+        message: 'Your ride with Alvee to Bashundhara was completed. Rate your driver now!',
+        timestamp: new Date(Date.now() - 1000 * 60 * 60 * 48).toISOString(), // 2 days ago
+        type: 'ride_update',
+        isRead: true
+    }
 ];

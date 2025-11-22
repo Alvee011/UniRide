@@ -1,12 +1,14 @@
 
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { Ride, RideRequest, Vehicle } from '../types';
-import { MOCK_RIDES, MY_VEHICLES, MOCK_REQUESTS } from '../constants';
+import { Ride, RideRequest, Vehicle, Notification } from '../types';
+import { MOCK_RIDES, MY_VEHICLES, MOCK_REQUESTS, MOCK_NOTIFICATIONS } from '../constants';
 
 interface AppContextType {
   rides: Ride[];
   vehicles: Vehicle[];
   requests: RideRequest[];
+  notifications: Notification[];
+  unreadCount: number;
   isModalOpen: boolean;
   isNavbarLocked: boolean;
   setModalOpen: (open: boolean) => void;
@@ -18,6 +20,9 @@ interface AppContextType {
   deleteVehicle: (id: string) => void;
   sendRequest: (req: RideRequest) => void;
   handleRequestAction: (id: string, action: 'accepted' | 'rejected') => void;
+  markAsRead: (id: string) => void;
+  markAllAsRead: () => void;
+  clearNotifications: () => void;
   resetApp: () => void;
 }
 
@@ -52,6 +57,15 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     }
   });
 
+  const [notifications, setNotifications] = useState<Notification[]>(() => {
+    try {
+      const saved = localStorage.getItem('notifications');
+      return saved ? JSON.parse(saved) : MOCK_NOTIFICATIONS;
+    } catch (e) {
+      return MOCK_NOTIFICATIONS;
+    }
+  });
+
   const [isModalOpen, setModalOpen] = useState(false);
   
   const [isNavbarLocked, setIsNavbarLocked] = useState<boolean>(() => {
@@ -61,6 +75,8 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       return false;
     }
   });
+
+  const unreadCount = notifications.filter(n => !n.isRead).length;
 
   // Persist to localStorage whenever state changes
   useEffect(() => {
@@ -74,6 +90,10 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   useEffect(() => {
     localStorage.setItem('requests', JSON.stringify(requests));
   }, [requests]);
+
+  useEffect(() => {
+    localStorage.setItem('notifications', JSON.stringify(notifications));
+  }, [notifications]);
 
   const toggleNavbarLock = () => {
     setIsNavbarLocked(prev => {
@@ -107,6 +127,17 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
 
   const sendRequest = (req: RideRequest) => {
     setRequests(prev => [...prev, req]);
+    
+    // Simulate a system notification for the request sent
+    const notif: Notification = {
+        id: `notif_${Date.now()}`,
+        title: 'Request Sent',
+        message: `Your request to ${req.passenger.name === 'Orin' ? 'the driver' : 'join the ride'} has been sent.`,
+        timestamp: new Date().toISOString(),
+        type: 'system',
+        isRead: false
+    };
+    setNotifications(prev => [notif, ...prev]);
   };
 
   const handleRequestAction = (id: string, action: 'accepted' | 'rejected') => {
@@ -115,34 +146,62 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       req.id === id ? { ...req, status: action } : req
     ));
 
+    const req = requests.find(r => r.id === id);
+
     // If accepted, we need to add the passenger to the ride and update seats
     if (action === 'accepted') {
-        const request = requests.find(r => r.id === id);
-        if (request) {
+        if (req) {
             setRides(prevRides => prevRides.map(ride => {
-                if (ride.id === request.rideId) {
+                if (ride.id === req.rideId) {
                     const currentPassengers = ride.passengers || [];
                     // Check if passenger already exists to avoid duplicates
-                    if (currentPassengers.some(p => p.name === request.passenger.name)) {
+                    if (currentPassengers.some(p => p.name === req.passenger.name)) {
                         return ride;
                     }
                     
                     return {
                         ...ride,
                         availableSeats: Math.max(0, ride.availableSeats - 1),
-                        passengers: [...currentPassengers, request.passenger]
+                        passengers: [...currentPassengers, req.passenger]
                     };
                 }
                 return ride;
             }));
         }
     }
+
+    // Add Notification
+    if (req) {
+        const notif: Notification = {
+            id: `notif_${Date.now()}`,
+            title: `Ride Request ${action === 'accepted' ? 'Accepted' : 'Rejected'}`,
+            message: `${req.passenger.name}'s request has been ${action}.`,
+            timestamp: new Date().toISOString(),
+            type: 'ride_update',
+            isRead: false
+        };
+
+        setNotifications(prev => [notif, ...prev]);
+    }
+  };
+
+  const markAsRead = (id: string) => {
+      setNotifications(prev => prev.map(n => n.id === id ? { ...n, isRead: true } : n));
+  };
+
+  const markAllAsRead = () => {
+      setNotifications(prev => prev.map(n => ({ ...n, isRead: true })));
+  };
+
+  const clearNotifications = () => {
+      setNotifications([]);
   };
 
   const resetApp = () => {
     setRides(MOCK_RIDES);
     setVehicles(MY_VEHICLES);
     setRequests(MOCK_REQUESTS);
+    setNotifications(MOCK_NOTIFICATIONS);
     setIsNavbarLocked(false);
     localStorage.removeItem('isNavbarLocked');
   };
@@ -152,6 +211,8 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       rides,
       vehicles,
       requests,
+      notifications,
+      unreadCount,
       isModalOpen,
       isNavbarLocked,
       setModalOpen,
@@ -163,6 +224,9 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       deleteVehicle,
       sendRequest,
       handleRequestAction,
+      markAsRead,
+      markAllAsRead,
+      clearNotifications,
       resetApp
     }}>
       {children}

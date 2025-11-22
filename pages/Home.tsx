@@ -1,16 +1,17 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Bell, Search, MapPin, Clock, ArrowRight, Car, PlusCircle, Bike, Star } from 'lucide-react';
+import { Bell, Search, MapPin, Clock, ArrowRight, Car, PlusCircle, Bike, Star, GraduationCap } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 import { CURRENT_USER } from '../constants';
 
 export const Home: React.FC = () => {
   const navigate = useNavigate();
+  const { unreadCount } = useApp();
   
   // Sheet state: percentage of screen height
-  // Default to 90% as requested (Top 10% Map)
-  const [sheetHeight, setSheetHeight] = useState(88); 
+  // Default to 83% as requested (Top 17% Map)
+  const [sheetHeight, setSheetHeight] = useState(83); 
   const [isDragging, setIsDragging] = useState(false);
   const sheetRef = useRef<HTMLDivElement>(null);
   
@@ -48,7 +49,7 @@ export const Home: React.FC = () => {
     setIsDragging(false);
     // Snap logic
     if (sheetHeight > 60) {
-        setSheetHeight(88); // Snap to expanded
+        setSheetHeight(83); // Snap to expanded (17% map visible)
     } else {
         setSheetHeight(40); // Snap to collapsed
     }
@@ -101,7 +102,9 @@ export const Home: React.FC = () => {
             className="w-10 h-10 bg-white rounded-full shadow-md flex items-center justify-center text-slate-700 relative active:scale-95 transition-transform pointer-events-auto"
         >
             <Bell size={20} />
-            <span className="absolute top-2 right-2.5 w-2 h-2 bg-red-500 rounded-full border border-white"></span>
+            {unreadCount > 0 && (
+                <span className="absolute top-2 right-2.5 w-2.5 h-2.5 bg-red-500 rounded-full border border-white"></span>
+            )}
         </button>
       </div>
 
@@ -119,7 +122,7 @@ export const Home: React.FC = () => {
             onTouchEnd={handleTouchEnd}
             onClick={() => {
                 // Tap toggle functionality
-                if (sheetHeight < 60) setSheetHeight(88);
+                if (sheetHeight < 60) setSheetHeight(83);
             }}
         >
             {/* The Handle Indicator */}
@@ -161,6 +164,13 @@ export const Home: React.FC = () => {
                             <Star size={28} />
                         </div>
                         <span className="text-xs font-bold text-slate-700">Work</span>
+                    </button>
+                    
+                    <button onClick={() => navigate('/search')} className="flex flex-col items-center gap-2 min-w-[4.5rem] group">
+                        <div className="w-16 h-16 bg-indigo-50 rounded-3xl flex items-center justify-center text-indigo-600 group-active:scale-95 transition-all border border-indigo-100 shadow-sm">
+                            <GraduationCap size={28} />
+                        </div>
+                        <span className="text-xs font-bold text-slate-700">University</span>
                     </button>
 
                     <button onClick={() => navigate('/search')} className="flex flex-col items-center gap-2 min-w-[4.5rem] group">
@@ -210,7 +220,7 @@ export const Home: React.FC = () => {
                     </div>
                 </div>
 
-                {/* My Trips */}
+                {/* Activity */}
                 <div 
                     onClick={() => navigate('/my-rides')}
                     className="bg-white border border-gray-100 p-4 rounded-3xl shadow-sm flex items-center gap-4 cursor-pointer active:scale-95 transition-transform"
@@ -219,7 +229,7 @@ export const Home: React.FC = () => {
                         <Bike size={20} />
                     </div>
                     <div>
-                        <h4 className="font-bold text-slate-800 text-sm">Rentals</h4>
+                        <h4 className="font-bold text-slate-800 text-sm">Activity</h4>
                     </div>
                 </div>
 
