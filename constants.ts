@@ -4,7 +4,7 @@ import { Ride, User, LocationSuggestion, Vehicle, RideRequest } from './types';
 export const CURRENT_USER: User = {
     id: 'u1',
     name: 'Faruque Azam Alvee',
-    avatar: 'https://picsum.photos/seed/alvee/200',
+    avatar: 'https://res.cloudinary.com/dhkjgite9/image/upload/v1763823794/Alvee_j0tl2z.jpg',
     rating: 4.9,
     phone: '+8801727828730'
 };
@@ -34,7 +34,7 @@ export const MOCK_RIDES: Ride[] = [
         driver: {
             id: 'd1',
             name: 'Alvee Faruque',
-            avatar: 'https://picsum.photos/seed/alvee/200',
+            avatar: 'https://res.cloudinary.com/dhkjgite9/image/upload/v1763823794/Alvee_j0tl2z.jpg',
             rating: 4.9,
             phone: '+8801727828730'
         },

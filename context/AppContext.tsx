@@ -8,7 +8,9 @@ interface AppContextType {
   vehicles: Vehicle[];
   requests: RideRequest[];
   isModalOpen: boolean;
+  isNavbarLocked: boolean;
   setModalOpen: (open: boolean) => void;
+  toggleNavbarLock: () => void;
   addRide: (ride: Ride) => void;
   updateRide: (ride: Ride) => void;
   deleteRide: (id: string) => void;
@@ -51,6 +53,14 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   });
 
   const [isModalOpen, setModalOpen] = useState(false);
+  
+  const [isNavbarLocked, setIsNavbarLocked] = useState<boolean>(() => {
+    try {
+      return localStorage.getItem('isNavbarLocked') === 'true';
+    } catch (e) {
+      return false;
+    }
+  });
 
   // Persist to localStorage whenever state changes
   useEffect(() => {
@@ -64,6 +74,14 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   useEffect(() => {
     localStorage.setItem('requests', JSON.stringify(requests));
   }, [requests]);
+
+  const toggleNavbarLock = () => {
+    setIsNavbarLocked(prev => {
+      const newState = !prev;
+      localStorage.setItem('isNavbarLocked', String(newState));
+      return newState;
+    });
+  };
 
   // Actions
   const addRide = (ride: Ride) => {
@@ -125,6 +143,8 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     setRides(MOCK_RIDES);
     setVehicles(MY_VEHICLES);
     setRequests(MOCK_REQUESTS);
+    setIsNavbarLocked(false);
+    localStorage.removeItem('isNavbarLocked');
   };
 
   return (
@@ -133,7 +153,9 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       vehicles,
       requests,
       isModalOpen,
+      isNavbarLocked,
       setModalOpen,
+      toggleNavbarLock,
       addRide,
       updateRide,
       deleteRide,

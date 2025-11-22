@@ -17,7 +17,7 @@ export const Onboarding: React.FC = () => {
         {/* Illustration */}
         <div className="w-full max-w-xs aspect-square relative mb-12 flex items-center justify-center">
             <img 
-                src="/Images/homescreenlogo.png" 
+                src="https://res.cloudinary.com/dhkjgite9/image/upload/v1763823811/homescreenlogo_brw9xc.png" 
                 alt="Car Sharing Illustration"
                 className="w-full h-auto object-contain drop-shadow-xl mix-blend-multiply" 
             />

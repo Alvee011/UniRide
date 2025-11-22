@@ -21,8 +21,12 @@ export const Navigation: React.FC = () => {
     { icon: User, label: 'Profile', path: '/profile' },
   ];
 
+  // Reverted to fixed positioning for both states to restore original behavior
+  // This ensures the navbar sticks to the bottom of the viewport
+  const positionClass = 'fixed bottom-0 left-0 right-0';
+
   return (
-    <div className="fixed bottom-0 left-0 right-0 bg-dark-900 text-white px-6 py-4 rounded-t-3xl shadow-up z-50">
+    <div className={`${positionClass} bg-dark-900 text-white px-6 py-4 rounded-t-3xl shadow-up z-50`}>
       <div className="flex justify-between items-center max-w-md mx-auto">
         {navItems.map((item) => {
             // Check if path starts with item.path to keep active state for nested routes if any
