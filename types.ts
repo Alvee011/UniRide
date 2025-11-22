@@ -54,6 +54,18 @@ export interface RideRequest {
     status: 'pending' | 'accepted' | 'rejected';
 }
 
+export interface Opportunity {
+    id: string;
+    passenger: User;
+    from: string;
+    to: string;
+    date: string;
+    time: string;
+    seats: number;
+    price: number;
+    status: 'open' | 'offered';
+}
+
 export enum PaymentMethod {
     CASH = 'Cash',
     CARD = 'Cards',

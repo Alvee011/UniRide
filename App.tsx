@@ -15,6 +15,8 @@ import { Trips } from './pages/Trips';
 import { RideRequests } from './pages/RideRequests';
 import { Settings } from './pages/Settings';
 import { Notifications } from './pages/Notifications';
+import { Opportunities } from './pages/Opportunities';
+import { ScheduleTrip } from './pages/ScheduleTrip';
 import { AppProvider } from './context/AppContext';
 
 const App: React.FC = () => {
@@ -36,6 +38,8 @@ const App: React.FC = () => {
             <Route path="/trips" element={<Trips />} />
             <Route path="/settings" element={<Settings />} />
             <Route path="/notifications" element={<Notifications />} />
+            <Route path="/opportunities" element={<Opportunities />} />
+            <Route path="/schedule-trip" element={<ScheduleTrip />} />
             <Route path="*" element={<Navigate to="/" />} />
           </Routes>
           <Navigation />

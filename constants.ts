@@ -1,5 +1,5 @@
 
-import { Ride, User, LocationSuggestion, Vehicle, RideRequest, Notification } from './types';
+import { Ride, User, LocationSuggestion, Vehicle, RideRequest, Notification, Opportunity } from './types';
 
 export const CURRENT_USER: User = {
     id: 'u1',
@@ -158,5 +158,40 @@ export const MOCK_NOTIFICATIONS: Notification[] = [
         timestamp: new Date(Date.now() - 1000 * 60 * 60 * 48).toISOString(), // 2 days ago
         type: 'ride_update',
         isRead: true
+    }
+];
+
+export const MOCK_OPPORTUNITIES: Opportunity[] = [
+    {
+        id: 'opt1',
+        passenger: {
+            id: 'p1',
+            name: 'Sarah Khan',
+            avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=100&h=100',
+            rating: 4.8
+        },
+        from: 'Dhanmondi 27',
+        to: 'Mohakhali DOHS',
+        date: new Date().toISOString().split('T')[0],
+        time: '09:00 AM',
+        seats: 2,
+        price: 180,
+        status: 'open'
+    },
+    {
+        id: 'opt2',
+        passenger: {
+            id: 'p2',
+            name: 'Rahim Uddin',
+            avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=100&h=100',
+            rating: 4.5
+        },
+        from: 'Uttara Sector 4',
+        to: 'Motijheel',
+        date: new Date().toISOString().split('T')[0],
+        time: '08:30 AM',
+        seats: 1,
+        price: 300,
+        status: 'open'
     }
 ];

@@ -1,18 +1,19 @@
 
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { Ride, RideRequest, Vehicle, Notification } from '../types';
-import { MOCK_RIDES, MY_VEHICLES, MOCK_REQUESTS, MOCK_NOTIFICATIONS } from '../constants';
+import { Ride, RideRequest, Vehicle, Notification, Opportunity } from '../types';
+import { MOCK_RIDES, MY_VEHICLES, MOCK_REQUESTS, MOCK_NOTIFICATIONS, MOCK_OPPORTUNITIES } from '../constants';
 
 interface AppContextType {
   rides: Ride[];
   vehicles: Vehicle[];
   requests: RideRequest[];
   notifications: Notification[];
+  opportunities: Opportunity[];
   unreadCount: number;
   isModalOpen: boolean;
-  isNavbarLocked: boolean;
+  isNavbarHidden: boolean;
   setModalOpen: (open: boolean) => void;
-  toggleNavbarLock: () => void;
+  toggleNavbarHidden: () => void;
   addRide: (ride: Ride) => void;
   updateRide: (ride: Ride) => void;
   deleteRide: (id: string) => void;
@@ -20,6 +21,7 @@ interface AppContextType {
   deleteVehicle: (id: string) => void;
   sendRequest: (req: RideRequest) => void;
   handleRequestAction: (id: string, action: 'accepted' | 'rejected') => void;
+  addOpportunity: (opt: Opportunity) => void;
   markAsRead: (id: string) => void;
   markAllAsRead: () => void;
   clearNotifications: () => void;
@@ -66,11 +68,20 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     }
   });
 
+  const [opportunities, setOpportunities] = useState<Opportunity[]>(() => {
+    try {
+      const saved = localStorage.getItem('opportunities');
+      return saved ? JSON.parse(saved) : MOCK_OPPORTUNITIES;
+    } catch (e) {
+      return MOCK_OPPORTUNITIES;
+    }
+  });
+
   const [isModalOpen, setModalOpen] = useState(false);
   
-  const [isNavbarLocked, setIsNavbarLocked] = useState<boolean>(() => {
+  const [isNavbarHidden, setIsNavbarHidden] = useState<boolean>(() => {
     try {
-      return localStorage.getItem('isNavbarLocked') === 'true';
+      return localStorage.getItem('isNavbarHidden') === 'true';
     } catch (e) {
       return false;
     }
@@ -95,10 +106,14 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     localStorage.setItem('notifications', JSON.stringify(notifications));
   }, [notifications]);
 
-  const toggleNavbarLock = () => {
-    setIsNavbarLocked(prev => {
+  useEffect(() => {
+    localStorage.setItem('opportunities', JSON.stringify(opportunities));
+  }, [opportunities]);
+
+  const toggleNavbarHidden = () => {
+    setIsNavbarHidden(prev => {
       const newState = !prev;
-      localStorage.setItem('isNavbarLocked', String(newState));
+      localStorage.setItem('isNavbarHidden', String(newState));
       return newState;
     });
   };
@@ -185,6 +200,10 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     }
   };
 
+  const addOpportunity = (opt: Opportunity) => {
+    setOpportunities(prev => [opt, ...prev]);
+  };
+
   const markAsRead = (id: string) => {
       setNotifications(prev => prev.map(n => n.id === id ? { ...n, isRead: true } : n));
   };
@@ -202,8 +221,9 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     setVehicles(MY_VEHICLES);
     setRequests(MOCK_REQUESTS);
     setNotifications(MOCK_NOTIFICATIONS);
-    setIsNavbarLocked(false);
-    localStorage.removeItem('isNavbarLocked');
+    setOpportunities(MOCK_OPPORTUNITIES);
+    setIsNavbarHidden(false);
+    localStorage.removeItem('isNavbarHidden');
   };
 
   return (
@@ -212,11 +232,12 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       vehicles,
       requests,
       notifications,
+      opportunities,
       unreadCount,
       isModalOpen,
-      isNavbarLocked,
+      isNavbarHidden,
       setModalOpen,
-      toggleNavbarLock,
+      toggleNavbarHidden,
       addRide,
       updateRide,
       deleteRide,
@@ -224,6 +245,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       deleteVehicle,
       sendRequest,
       handleRequestAction,
+      addOpportunity,
       markAsRead,
       markAllAsRead,
       clearNotifications,

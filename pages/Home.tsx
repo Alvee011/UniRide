@@ -1,7 +1,7 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Bell, Search, MapPin, Clock, ArrowRight, Car, PlusCircle, Bike, Star, GraduationCap } from 'lucide-react';
+import { Bell, Search, MapPin, Clock, ArrowRight, Car, PlusCircle, Bike, Star, GraduationCap, Calendar, TrendingUp } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 import { CURRENT_USER } from '../constants';
 
@@ -18,6 +18,23 @@ export const Home: React.FC = () => {
   // Drag tracking refs
   const dragStartY = useRef(0);
   const startHeight = useRef(0);
+
+  // Dynamic Greeting State
+  const [greeting, setGreeting] = useState('Good Morning');
+
+  useEffect(() => {
+    const updateGreeting = () => {
+      const hour = new Date().getHours();
+      if (hour < 12) setGreeting('Good Morning');
+      else if (hour < 18) setGreeting('Good Afternoon');
+      else setGreeting('Good Evening');
+    };
+    
+    updateGreeting();
+    // Update periodically in case app stays open across time boundaries
+    const interval = setInterval(updateGreeting, 60000);
+    return () => clearInterval(interval);
+  }, []);
 
   const handleTouchStart = (e: React.TouchEvent) => {
     setIsDragging(true);
@@ -92,8 +109,8 @@ export const Home: React.FC = () => {
                 />
             </div>
             <div className="bg-white/80 backdrop-blur-md py-1.5 px-4 rounded-full shadow-sm">
-                <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Good Morning</p>
-                <h1 className="text-sm font-bold text-slate-800">{CURRENT_USER.name.split(' ')[0]}</h1>
+                <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">{greeting}</p>
+                <h1 className="text-sm font-bold text-slate-800">Alvee</h1>
             </div>
         </div>
         
@@ -220,7 +237,7 @@ export const Home: React.FC = () => {
                     </div>
                 </div>
 
-                {/* Activity */}
+                {/* Nearby Trips (Formerly Activity) */}
                 <div 
                     onClick={() => navigate('/my-rides')}
                     className="bg-white border border-gray-100 p-4 rounded-3xl shadow-sm flex items-center gap-4 cursor-pointer active:scale-95 transition-transform"
@@ -229,7 +246,7 @@ export const Home: React.FC = () => {
                         <Bike size={20} />
                     </div>
                     <div>
-                        <h4 className="font-bold text-slate-800 text-sm">Activity</h4>
+                        <h4 className="font-bold text-slate-800 text-sm">Nearby Trips</h4>
                     </div>
                 </div>
 
@@ -243,6 +260,32 @@ export const Home: React.FC = () => {
                     </div>
                     <div>
                         <h4 className="font-bold text-slate-800 text-sm">My Car</h4>
+                    </div>
+                </div>
+
+                {/* Schedule Trip */}
+                <div 
+                    onClick={() => navigate('/schedule-trip')}
+                    className="bg-white border border-gray-100 p-4 rounded-3xl shadow-sm flex items-center gap-4 cursor-pointer active:scale-95 transition-transform"
+                >
+                    <div className="w-10 h-10 bg-cyan-50 text-cyan-500 rounded-xl flex items-center justify-center shrink-0">
+                        <Calendar size={20} />
+                    </div>
+                    <div>
+                        <h4 className="font-bold text-slate-800 text-sm">Schedule Trip</h4>
+                    </div>
+                </div>
+
+                {/* Opportunities */}
+                <div 
+                    onClick={() => navigate('/opportunities')}
+                    className="bg-white border border-gray-100 p-4 rounded-3xl shadow-sm flex items-center gap-4 cursor-pointer active:scale-95 transition-transform"
+                >
+                    <div className="w-10 h-10 bg-rose-50 text-rose-500 rounded-xl flex items-center justify-center shrink-0">
+                        <TrendingUp size={20} />
+                    </div>
+                    <div>
+                        <h4 className="font-bold text-slate-800 text-sm">Opportunities</h4>
                     </div>
                 </div>
             </div>

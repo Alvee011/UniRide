@@ -7,11 +7,11 @@ import { useApp } from '../context/AppContext';
 export const Navigation: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const { isModalOpen } = useApp();
+  const { isModalOpen, isNavbarHidden } = useApp();
   const path = location.pathname;
 
-  // Hide navigation on onboarding, auth pages, or when a modal is open
-  if (path === '/' || path === '/login' || path === '/signup' || isModalOpen) return null;
+  // Hide navigation on onboarding, auth pages, when a modal is open, or when hidden via settings
+  if (path === '/' || path === '/login' || path === '/signup' || isModalOpen || isNavbarHidden) return null;
 
   const navItems = [
     { icon: Home, label: 'Home', path: '/home' },

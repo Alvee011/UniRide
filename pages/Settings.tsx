@@ -1,12 +1,12 @@
 
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, RotateCcw, Lock } from 'lucide-react';
+import { ArrowLeft, RotateCcw, EyeOff } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 
 export const Settings: React.FC = () => {
   const navigate = useNavigate();
-  const { resetApp, isNavbarLocked, toggleNavbarLock } = useApp();
+  const { resetApp, isNavbarHidden, toggleNavbarHidden } = useApp();
 
   const handleRestore = () => {
       if(window.confirm("Are you sure you want to restore default settings? This will erase all your data.")){
@@ -32,18 +32,18 @@ export const Settings: React.FC = () => {
                 <div className="flex items-center justify-between py-2">
                     <div className="flex items-center gap-4">
                         <div className="p-3 bg-blue-50 rounded-xl text-blue-500">
-                            <Lock size={20} />
+                            <EyeOff size={20} />
                         </div>
                         <div className="text-left">
-                            <h3 className="font-bold text-slate-800">Lock Navigation Bar</h3>
-                            <p className="text-xs text-gray-400">Keep menu fixed at bottom</p>
+                            <h3 className="font-bold text-slate-800">Hide Navigation Bar</h3>
+                            <p className="text-xs text-gray-400">Turning this on will hide this menu</p>
                         </div>
                     </div>
                     <button 
-                        onClick={toggleNavbarLock}
-                        className={`w-12 h-6 rounded-full p-1 transition-colors duration-300 ${isNavbarLocked ? 'bg-primary-500' : 'bg-gray-200'}`}
+                        onClick={toggleNavbarHidden}
+                        className={`w-12 h-6 rounded-full p-1 transition-colors duration-300 ${isNavbarHidden ? 'bg-primary-500' : 'bg-gray-200'}`}
                     >
-                        <div className={`w-4 h-4 rounded-full bg-white shadow-sm transform transition-transform duration-300 ${isNavbarLocked ? 'translate-x-6' : 'translate-x-0'}`}></div>
+                        <div className={`w-4 h-4 rounded-full bg-white shadow-sm transform transition-transform duration-300 ${isNavbarHidden ? 'translate-x-6' : 'translate-x-0'}`}></div>
                     </button>
                 </div>
           </div>
