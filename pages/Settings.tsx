@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, RotateCcw, EyeOff } from 'lucide-react';
@@ -64,7 +63,7 @@ export const Settings: React.FC = () => {
           </div>
 
           <div className="flex flex-col items-center justify-center mt-16 text-center">
-              <p className="text-sm font-bold text-slate-700">© 2025 UniRide</p>
+              <p className="text-sm font-bold text-slate-700">© 2025 GoCab</p>
               <p className="text-xs font-medium text-slate-400 mt-1">Designed By Faruque Azam Alvee</p>
           </div>
       </div>

@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowRight, Car } from 'lucide-react';
@@ -26,11 +25,11 @@ export const Onboarding: React.FC = () => {
         <div className="text-center max-w-xs mx-auto">
           <div className="flex justify-center items-center gap-2 mb-6">
             <Car className="text-primary-500" size={28} />
-            <h1 className="text-2xl font-bold text-slate-900">UniRide</h1>
+            <h1 className="text-2xl font-bold text-slate-900">GoCab</h1>
           </div>
           
           <h2 className="text-3xl font-bold text-slate-800 mb-4 leading-tight">
-            Share rides easily with <span className="text-primary-500">UniRide</span>
+            Share rides easily with <span className="text-primary-500">GoCab</span>
           </h2>
           
           <p className="text-gray-500 text-sm leading-relaxed mb-12">

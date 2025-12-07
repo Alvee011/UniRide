@@ -1,4 +1,3 @@
-
 import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Bell, Search, MapPin, Clock, ArrowRight, Car, PlusCircle, Bike, Star, GraduationCap, Calendar, TrendingUp } from 'lucide-react';
@@ -294,7 +293,7 @@ export const Home: React.FC = () => {
             <div className="bg-gradient-to-r from-indigo-500 to-purple-600 rounded-3xl p-6 text-white shadow-lg shadow-indigo-200 relative overflow-hidden">
                 <div className="relative z-10 w-3/4">
                     <h3 className="font-bold text-xl mb-2">Invite Friends</h3>
-                    <p className="text-sm text-indigo-100 mb-4 leading-relaxed">Get 50% off your next ride by inviting friends to UniRide.</p>
+                    <p className="text-sm text-indigo-100 mb-4 leading-relaxed">Get 50% off your next ride by inviting friends to GoCab.</p>
                     <button className="bg-white text-indigo-600 text-xs font-bold px-4 py-2.5 rounded-xl shadow-md active:scale-95 transition-transform">
                         Invite Now
                     </button>

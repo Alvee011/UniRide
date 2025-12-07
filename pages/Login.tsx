@@ -16,7 +16,7 @@ export const Login: React.FC = () => {
       </div>
 
       <div className="flex-1 px-8 flex flex-col justify-center">
-        <h1 className="text-2xl font-bold text-center mb-2">Welcome to UniRide</h1>
+        <h1 className="text-2xl font-bold text-center mb-2">Welcome to GoCab</h1>
         <p className="text-lg font-medium text-center text-slate-600 mb-10">Login now!</p>
 
         <div className="space-y-6">

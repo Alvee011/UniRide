@@ -13,7 +13,7 @@ export const Signup: React.FC = () => {
         <button onClick={() => navigate('/home')} className="p-2 hover:bg-gray-50 rounded-full absolute left-6">
             <ArrowLeft size={24} className="text-slate-800" />
         </button>
-        <h1 className="w-full text-center text-lg font-bold">UniRide</h1>
+        <h1 className="w-full text-center text-lg font-bold">GoCab</h1>
       </div>
 
       <div className="flex-1 px-8 flex flex-col justify-center">

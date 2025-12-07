@@ -1,13 +1,13 @@
-# UniRide 🚗
+# GoCab 🚗
 
-**UniRide** is a modern, community-sharing application concept designed specifically for university students and daily commuters. It facilitates carpooling by connecting drivers with empty seats to passengers going the same way, helping to save travel costs and reduce traffic congestion.
+**GoCab** is a modern, community-sharing application concept designed specifically for university students and daily commuters. It facilitates carpooling by connecting drivers with empty seats to passengers going the same way, helping to save travel costs and reduce traffic congestion.
 
-![UniRide Banner](https://images.unsplash.com/photo-1449965408869-eaa3f722e40d?auto=format&fit=crop&w=1200&q=80)
+![GoCab Banner](https://images.unsplash.com/photo-1449965408869-eaa3f722e40d?auto=format&fit=crop&w=1200&q=80)
 *(Replace with actual application screenshots)*
 
 ## 📖 About The Project
 
-UniRide is built to solve the chaos of daily commuting in busy metropolitan areas (specifically modeled after Dhaka, Bangladesh). It offers a clean, intuitive interface where users can seamlessly switch between being a passenger or a driver.
+GoCab is built to solve the chaos of daily commuting in busy metropolitan areas (specifically modeled after Dhaka, Bangladesh). It offers a clean, intuitive interface where users can seamlessly switch between being a passenger or a driver.
 
 This repository contains the **Frontend Prototype** built with React and TypeScript. It uses local state management and mock data to demonstrate the full user flow without requiring a backend connection.
 
@@ -18,10 +18,12 @@ This repository contains the **Frontend Prototype** built with React and TypeScr
 *   **Ride Details:** View driver ratings, car models, price per seat, and estimated duration.
 *   **Booking System:** Request seats for specific dates and get notified upon acceptance.
 *   **Interactive Maps:** Visual route previews using embedded map integrations.
+*   **Schedule Trip:** Request a ride for a specific time and date.
 
 ### For Drivers
 *   **Post a Ride:** Quickly list a ride with departure time, seat capacity, price, and recurring days.
 *   **Request Management:** specific "Ride Requests" screen to Approve or Reject incoming passenger requests.
+*   **Opportunities:** View and bid on scheduled trip requests from passengers.
 *   **Vehicle Management:** Add and manage multiple vehicles (Cars or Bikes) with details and photos.
 *   **Earnings & History:** Track ride history and passenger details (UI concepts).
 
@@ -52,11 +54,11 @@ To get a local copy up and running, follow these simple steps.
 
 1.  **Clone the repo**
     ```sh
-    git clone https://github.com/your_username/uniride.git
+    git clone https://github.com/your_username/gocab.git
     ```
 2.  **Navigate to the project folder**
     ```sh
-    cd uniride
+    cd gocab
     ```
 3.  **Install dependencies**
     ```sh
@@ -72,11 +74,12 @@ The application should now be running at `http://localhost:5173`.
 ## 📱 Screens Overview
 
 1.  **Onboarding:** Welcoming illustrations and value proposition.
-2.  **Home:** Dashboard showing active map background and nearby rides.
-3.  **Search:** specific inputs for "From" and "To" with a list of available rides.
+2.  **Home:** Dashboard showing active map background, quick actions, and nearby rides.
+3.  **Search:** Specific inputs for "From" and "To" with a list of available rides.
 4.  **Ride Card:** Detailed view of a specific ride with "Request" functionality.
 5.  **Ride Requests:** A dedicated inbox for drivers to manage incoming bookings.
 6.  **Profile:** User stats, settings, and vehicle management.
+7.  **Opportunities:** Marketplace for drivers to find passenger trip requests.
 
 ## 🤝 Contributing
 
